@@ -367,3 +367,13 @@ tasks.register(CiUtils.getCreateBinaryFolderForCiTaskName()) {
     }
 }
 // ======= end of GitHub action stuff
+
+/** 離屏驗證主畫面工具列，不建立桌面視窗或啟動下載服務。 */
+tasks.register<JavaExec>("verifyHomeToolbar") {
+    dependsOn(tasks.named("testClasses"))
+    classpath = sourceSets["test"].runtimeClasspath
+    mainClass.set("com.abdownloadmanager.desktop.pages.home.HomeToolbarSmokeKt")
+    javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
+    systemProperty("java.awt.headless", "true")
+    args(layout.buildDirectory.dir("reports/home-toolbar").get().asFile.absolutePath)
+}
