@@ -9,3 +9,7 @@ local.properties
 
 # Ignore android keystores
 *.jks
+.audit
+.github/copilot-instructions.md
+
+/release/
