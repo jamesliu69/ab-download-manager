@@ -4,6 +4,7 @@ import com.abdownloadmanager.UpdateManager
 import com.abdownloadmanager.desktop.pages.addDownload.multiple.DesktopAddMultiDownloadComponent
 import com.abdownloadmanager.desktop.pages.addDownload.single.DesktopAddSingleDownloadComponent
 import com.abdownloadmanager.desktop.pages.batchdownload.DesktopBatchDownloadComponent
+import com.abdownloadmanager.desktop.pages.batchdownload.WebPageLinkExtractor
 import com.abdownloadmanager.desktop.pages.category.DesktopCategoryDialogManager
 import com.abdownloadmanager.desktop.pages.checksum.DesktopFileChecksumComponent
 import com.abdownloadmanager.desktop.pages.editdownload.DesktopEditDownloadComponent
@@ -75,6 +76,7 @@ import ir.amirab.util.osfileutil.FileUtils
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlinx.serialization.Serializable
+import okhttp3.OkHttpClient
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import kotlin.system.exitProcess
@@ -113,6 +115,8 @@ class AppComponent(
     val appSettings: AppSettingsStorage by inject()
     val downloaderInUiRegistry: DownloaderInUiRegistry by inject()
     private val queueManager: QueueManager by inject()
+    /** 共用已設定的 HTTP client，讓網頁掃描沿用應用程式的網路設定。 */
+    private val httpClient: OkHttpClient by inject()
     private val defaultCategories: DefaultCategories by inject()
     private val integration: Integration by inject()
     private val perHostSettingsManager: PerHostSettingsManager by inject()
@@ -206,6 +210,7 @@ class AppComponent(
             DesktopBatchDownloadComponent(
                 ctx = componentContext,
                 onClose = this::closeBatchDownload,
+                pageLinkExtractor = WebPageLinkExtractor(httpClient),
                 importLinks = {
                     openAddDownloadDialog(
                         it.mapNotNull {

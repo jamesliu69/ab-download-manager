@@ -387,3 +387,12 @@ tasks.register<JavaExec>("verifyFontScale") {
     systemProperty("java.awt.headless", "true")
     args(layout.buildDirectory.dir("reports/font-scale").get().asFile.absolutePath)
 }
+
+/** 驗證網頁連結擷取的解析規則，不發出網路請求或建立桌面視窗。 */
+tasks.register<JavaExec>("verifyWebPageLinkExtractor") {
+    dependsOn(tasks.named("testClasses"))
+    classpath = sourceSets["test"].runtimeClasspath
+    mainClass.set("com.abdownloadmanager.desktop.pages.batchdownload.WebPageLinkExtractorSmokeKt")
+    javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
+    systemProperty("java.awt.headless", "true")
+}
