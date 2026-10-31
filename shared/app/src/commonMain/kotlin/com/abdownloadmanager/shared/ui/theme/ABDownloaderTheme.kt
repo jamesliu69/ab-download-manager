@@ -9,17 +9,20 @@ import androidx.compose.ui.unit.TextUnit
 import com.abdownloadmanager.shared.util.ui.*
 import com.abdownloadmanager.shared.util.ui.theme.*
 import com.abdownloadmanager.shared.util.ui.theme.UiScaledContent
+import com.abdownloadmanager.shared.util.ui.theme.scaled
 
 
+/** 提供應用程式色彩、字型、元件尺寸與文字倍率主題。 */
 @Composable
 fun ABDownloaderTheme(
     myColors: MyColors,
     fontFamily: FontFamily? = null,
     uiScale: Float = DEFAULT_UI_SCALE,
+    fontScale: Float = 1f,
     content: @Composable () -> Unit,
 ) {
     val systemDensity = LocalDensity.current
-    val textSizes = myPlatformTextSizes()
+    val textSizes = myPlatformTextSizes().scaled(fontScale)
     CompositionLocalProvider(
         LocalMyColors provides animatedColors(myColors),
         LocalUiScale provides uiScale,

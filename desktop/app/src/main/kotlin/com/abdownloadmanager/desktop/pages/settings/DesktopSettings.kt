@@ -70,6 +70,17 @@ object DesktopSettings {
         )
     }
 
+    /** 建立立即反映於桌面文字的字級倍率選項。 */
+    fun fontSizeConfig(appSettings: AppSettingsStorage): EnumConfigurable<Float> {
+        return EnumConfigurable(
+            title = Res.string.settings_font_size.asStringSource(),
+            description = Res.string.settings_font_size_description.asStringSource(),
+            backedBy = appSettings.fontScale,
+            possibleValues = listOf(0.8f, 0.9f, 1f, 1.1f, 1.25f, 1.5f, 1.75f, 2f),
+            itemTitle = { "${(it * 100).toInt()}%".asStringSource() },
+        )
+    }
+
     fun renderApi(
         customRenderApi: CustomRenderApi,
     ): EnumConfigurable<RenderApi?> {

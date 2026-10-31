@@ -137,6 +137,7 @@ object Ui : KoinComponent {
     }
 }
 
+/** 將桌面設定狀態注入主題與其下的介面內容。 */
 @Composable
 private fun ProvideLocalProviders(
     languageManager: LanguageManager,
@@ -172,7 +173,8 @@ private fun ProvideLocalProviders(
                     ABDownloaderTheme(
                         myColors = theme,
                         fontFamily = fontFamily,
-                        uiScale = appComponent.uiScale.collectAsState().value
+                        uiScale = appComponent.uiScale.collectAsState().value,
+                        fontScale = appComponent.appSettings.fontScale.collectAsState().value,
                     ) {
                         ProvideGlobalExceptionHandler(globalAppExceptionHandler) {
                             ProvideSizeUnits(appComponent.appRepository) {

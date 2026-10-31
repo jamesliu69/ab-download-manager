@@ -63,6 +63,7 @@ class DesktopSettingsComponent(
     private val fontManager by inject<FontManager>()
     private val customRenderApi by inject<CustomRenderApi>()
     private val allConfigs = object : SettingSectionGetter {
+        /** 依外觀或下載功能區段回傳對應的設定群組。 */
         override operator fun get(key: SettingSection): List<ConfigurableGroup> {
             return when (key) {
                 Appearance -> listOf(
@@ -80,6 +81,7 @@ class DesktopSettingsComponent(
                         nestedConfigurable = listOf(
                             CommonSettings.languageConfig(languageManager, scope),
                             DesktopSettings.fontConfig(fontManager, scope),
+                            DesktopSettings.fontSizeConfig(appSettings),
                             CommonSettings.uiScaleConfig(appSettings),
                         )
                     ),

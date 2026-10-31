@@ -416,18 +416,21 @@ class HomeComponent(
         "$metaKey I" to downloadActions.openDownloadDialogAction
     }
     val showLabels = appSettings.showIconLabels
+    /** 主畫面快捷操作直接重用選單動作，保留各動作的啟用狀態與確認流程。 */
     val headerActions = buildMenu {
+        +newDownloadAction
+        +newDownloadFromClipboardAction
+        +batchDownloadAction
         separator()
         +downloadActions.resumeAction
         +downloadActions.pauseAction
+        +stopAllAction
+        separator()
+        +downloadActions.deleteAction
         separator()
         +startQueueGroupAction
         +stopQueueGroupAction
         +openQueuesAction
-        separator()
-        +stopAllAction
-        separator()
-        +downloadActions.deleteAction
         separator()
         +gotoSettingsAction
     }
