@@ -35,6 +35,19 @@ data class TextSizes(
     val x5l: TextUnit,
 )
 
+/** 以同一倍率縮放主題提供的九級文字尺寸，不改變 dp 尺寸。 */
+internal fun TextSizes.scaled(fontScale: Float) = copy(
+    xs = xs * fontScale,
+    sm = sm * fontScale,
+    base = base * fontScale,
+    lg = lg * fontScale,
+    xl = xl * fontScale,
+    x2l = x2l * fontScale,
+    x3l = x3l * fontScale,
+    x4l = x4l * fontScale,
+    x5l = x5l * fontScale,
+)
+
 val LocalSpacing = compositionLocalOf<MySpacings> {
     error("LocalSpacing not provided")
 }

@@ -79,6 +79,7 @@ import java.awt.datatransfer.DataFlavor
 import java.io.File
 
 
+/** 顯示共用快捷工具列、分類與下載表格，並處理既有確認及拖放流程。 */
 @Composable
 fun HomePage(component: HomeComponent) {
     val listState by component.downloadList.collectAsState()
@@ -296,6 +297,10 @@ fun HomePage(component: HomeComponent) {
                     .height(1.dp)
                     .background(myColors.surface)
             )
+            Actions(
+                component.headerActions,
+                component.showLabels.collectAsState().value,
+            )
             Row {
                 val categoriesWidth by component.categoriesWidth.collectAsState()
                 Column(
@@ -323,18 +328,6 @@ fun HomePage(component: HomeComponent) {
                     component.setCategoriesWidth { it + delta }
                 }
                 Column(Modifier.weight(1f)) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Spacer(Modifier.size(4.dp))
-                        AddUrlButton {
-                            component.requestEnterNewURL()
-                        }
-                        Actions(
-                            component.headerActions,
-                            component.showLabels.collectAsState().value
-                        )
-                    }
                     var lastSelected by remember { mutableStateOf(null as Long?) }
                     DownloadList(
                         modifier = Modifier
@@ -726,6 +719,7 @@ fun DragWidget(
 }
 
 
+/** 顯示分類標題及篩選項目，沿用分類拖放、排序與選單操作。 */
 @Composable
 private fun Categories(
     modifier: Modifier,
@@ -752,6 +746,12 @@ private fun Categories(
             .border(1.dp, myColors.surface, clipShape)
             .padding(1.dp)
     ) {
+        Text(
+            myStringResource(Res.string.categories),
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+            fontWeight = FontWeight.Bold,
+            color = myColors.onBackground,
+        )
         var expendedItem: DownloadStatusCategoryFilter? by remember {
             mutableStateOf(
                 currentStatusFilter
@@ -826,6 +826,7 @@ private fun HomeMenuBar(
     }
 }
 
+/** 顯示目前清單數量、選取統計與既有活動下載及速度資訊。 */
 @Composable
 private fun Footer(component: HomeComponent) {
     Row(
@@ -837,6 +838,9 @@ private fun Footer(component: HomeComponent) {
 
         val selectionSize by component.selectionContentSize.collectAsState()
 
+        if (selectionCount == 0) {
+            FooterItem(MyIcons.download, totalCount.toString(), "")
+        }
         if (selectionCount > 0) {
             FooterItem(
                 MyIcons.check,

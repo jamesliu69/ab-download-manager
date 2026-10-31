@@ -160,6 +160,28 @@ follow these steps:
 > **Note**. This project is compiled and published by GitHub actions [here](./.github/workflows/publish.yml), so if you
 > faced any problem you can check that too.
 
+### Windows 本機建置與打包
+
+在 Windows 上開啟終端機，於專案根目錄執行：
+
+```powershell
+.\build-windows.cmd
+```
+
+也可從其他工作目錄使用 `build-windows.cmd` 的完整路徑，或直接執行 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\build-windows.ps1`。腳本不接受參數。
+
+建置需要可啟動 Gradle wrapper 的 Java、已安裝且可由 Gradle 辨識的 Java 25 toolchain，以及安裝在 `C:\Program Files (x86)\NSIS\makensis.exe` 的 NSIS。可將 `JAVA_HOME` 指向 JDK 或 JBR 25，toolchain 仍由專案既有 Gradle 設定解析；首次執行需要網路下載 Gradle 與相依套件。入口使用 Windows 內建的 Windows PowerShell 5.1。
+
+腳本會顯示建置進度，一次執行 `:desktop:app:createDistributableAppArchiveZip` 與 `:desktop:app:createInstaller`。成功檢查必要產物後，會將檔案複製到相對於腳本所在專案根目錄的 `release/`，並列出下列完整路徑：
+
+- 執行檔套件目錄 `<專案根目錄>/release/ABDownloadManager/`，其中主程式是 `ABDownloadManager.exe`。
+- ZIP 套件 `<專案根目錄>/release/ABDownloadManager.zip`。
+- NSIS 安裝檔 `<專案根目錄>/release/ABDownloadManager-Setup.exe`。
+
+使用執行檔套件時，請保留整個資料夾及其 `app`、`runtime` 內容。建置失敗會傳回非零退出碼，Gradle 失敗時保留原始退出碼。同一工作樹請循序建置；重跑會更新對應的 release 產物，不會清理其他檔案或 Gradle 中間建置目錄。`release/ABDownloadManager/` 中已不再由本次建置產生的舊檔也會保留。腳本不會啟動程式或執行安裝。
+
+腳本的行為自我檢查可用 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\test-build-windows.ps1` 執行。它使用假 Gradle 與小型 fixture，無須實際建置或安裝 NSIS；每次的 fixture 都保留在已忽略的 `build/windows-package-self-check/`。
+
 ## Translations
 
 <a href="https://crowdin.com/project/ab-download-manager"><img alt="Crowdin" src="https://badges.crowdin.net/ab-download-manager/localized.svg"></a>

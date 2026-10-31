@@ -7,7 +7,9 @@ import io.github.amir1376.schemakt.S
 import io.github.amir1376.schemakt.schema.composite.TypeSafeObjectSchema
 import io.github.amir1376.schemakt.schema.composite.typeSafeObject
 import io.github.amir1376.schemakt.schema.modifier.catch
+import io.github.amir1376.schemakt.schema.modifier.range
 import io.github.amir1376.schemakt.schema.primitive.boolean
+import io.github.amir1376.schemakt.schema.primitive.float
 import ir.amirab.util.config.datastore.asSettingsSchema
 import kotlinx.serialization.Serializable
 
@@ -20,6 +22,8 @@ data class AppSettingsModel(
     override val language: String?,
     override val font: String?,
     override val uiScale: Float?,
+    /** 桌面文字大小相對於主題基準字級的倍率。 */
+    val fontScale: Float,
     override val showIconLabels: Boolean,
     override val useRelativeDateTime: Boolean,
     override val threadCount: Int,
@@ -62,6 +66,7 @@ data class AppSettingsModel(
     }
 }
 
+/** 定義桌面設定的讀取、欄位錯誤回退與模型建構方式。 */
 val DesktopSettingsSchema = S.typeSafeObject(
     definition = {
         BaseAppSettingsDefinition.sharedAppSettingsTypeSafeDefinition()
@@ -69,6 +74,7 @@ val DesktopSettingsSchema = S.typeSafeObject(
             .catch(PlatformDefaultSettings.mergeTopBarWithTitleBar)
         prop(AppSettingsModel::useNativeMenuBar) bind S.boolean().catch(PlatformDefaultSettings.useNativeMenuBar)
         prop(AppSettingsModel::useSystemTray) bind S.boolean().catch(PlatformDefaultSettings.useSystemTray)
+        prop(AppSettingsModel::fontScale) bind S.float().range(0.8f, 2f).catch(1f)
     },
     factory = {
         PlatformAppSettingsModel(
@@ -78,6 +84,7 @@ val DesktopSettingsSchema = S.typeSafeObject(
             language = it[AppSettingsModel::language],
             font = it[AppSettingsModel::font],
             uiScale = it[AppSettingsModel::uiScale],
+            fontScale = it[AppSettingsModel::fontScale],
             showIconLabels = it[AppSettingsModel::showIconLabels],
             useRelativeDateTime = it[AppSettingsModel::useRelativeDateTime],
             threadCount = it[AppSettingsModel::threadCount],

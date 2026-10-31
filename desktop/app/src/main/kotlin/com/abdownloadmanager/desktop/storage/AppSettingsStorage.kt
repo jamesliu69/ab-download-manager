@@ -51,6 +51,8 @@ class AppSettingsStorage(
     override val selectedLanguage = from(languageLens)
     override val font = from(fontLens)
     override val uiScale = from(uiScaleLens)
+    /** 提供桌面字級倍率的雙向狀態，變更會由此儲存層寫入設定資料。 */
+    val fontScale = from(AppSettingsModel.fontScale)
     val mergeTopBarWithTitleBar = from(AppSettingsModel.mergeTopBarWithTitleBar)
     val useNativeMenuBar = from(AppSettingsModel.useNativeMenuBar)
     override val showIconLabels = from(AppSettingsModel.showIconLabels)
