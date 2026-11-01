@@ -31,7 +31,7 @@ IDM 官方更新頁於本次分析日期列出 **6.43 Build 16（2026-10-23）**
 | 分段與效能 | 下載工作有多部分段實作，亦有速度限制器：`HttpDownloadJob.kt`、`downloader\core\src\commonMain\kotlin\ir\amirab\downloader\utils\speedlimiter\SpeedLimiter.kt`。 | IDM 的「最高 8 倍」是廠商宣稱；AB 沒有在此證據中提供可比較的基準數據。尚需評估連線數策略、伺服器相容性、低速／高速網路表現及對伺服器負載的影響。 |
 | 續傳、錯誤處理 | 有續傳與重試程式路徑；HTTP 測試會嘗試 Range，遇到部分伺服器不相容時退回無續傳模式：`HttpDownloadJob.kt`、`HttpDownloaderClient.kt`。 | 核心能力已存在，但可靠性品質不能只由程式碼存在與否推斷。需以斷網、伺服器不支援 Range、重導向、認證、磁碟空間不足、應用程式重新啟動等情境驗證。 |
 | 影片與串流 | 有 HLS 下載工作：`downloader\core\src\commonMain\kotlin\ir\amirab\downloader\downloaditem\hls\HLSDownloadJob.kt`。`HLSResponseInfo.kt` 對已知片段格式有 `.ts` 限制。 | IDM 提供瀏覽器影片下載面板。AB 本倉庫可確認 HLS 核心路徑，不能據此確認網站影片偵測、DRM／非 DRM 邊界、分段格式及瀏覽器面板等級的體驗。 |
-| 網站抓取與批次擷取 | 有新增單筆 HTTP/HLS 下載的 CLI 路徑：`desktop\app\src\main\kotlin\com\abdownloadmanager\desktop\cli\download\add\http\NewHttpDownload.kt`、`...\hls\NewHlsDownload.kt`。 | IDM 官方列出網站抓取、篩選器及頁面「Download All」。目前所查本倉庫證據未確認對應功能；需確認是否有批次匯入、頁面連結解析、遞迴深度／網域限制及類型篩選。 |
+| 網站抓取與批次擷取 | 有新增單筆 HTTP/HLS 下載的 CLI 路徑：`desktop\app\src\main\kotlin\com\abdownloadmanager\desktop\cli\download\add\http\NewHttpDownload.kt`、`desktop\app\src\main\kotlin\com\abdownloadmanager\desktop\cli\download\add\hls\NewHlsDownload.kt`。桌面應用程式新增單頁擷取：`desktop\app\src\main\kotlin\com\abdownloadmanager\desktop\pages\batchdownload\WebPageLinkExtractor.kt` 可解析錨點及常見圖片／音訊／影片資源，限制 HTML 2 MiB、最多匯入 1000 個唯一連結；`BatchDownnload.kt` 提供掃描、預覽與既有批次確認流程。 | IDM 官方列有網站抓取、篩選器及頁面「Download All」。目前仍不遞迴抓取其他頁面，也沒有網域／深度／檔案類型篩選；擴充前應提供使用者可控範圍與取消機制。 |
 | 瀏覽器整合 | 有 native messaging host 與 handler：`desktop\app\src\main\kotlin\com\abdownloadmanager\desktop\nativemessaging\host\NativeMessagingHost.kt`、`...\DefinedHandlers.kt`。README 列有 Chrome／Firefox 擴充功能連結並指出其為獨立專案。 | 不是從零開始，但本倉庫不足以確認擴充功能商店發布、瀏覽器版本涵蓋、下載攔截成功率、Cookie／Referer／POST 情況、更新相容性及影片面板行為。應將獨立擴充專案納入後續產品盤點。 |
 | 佇列與排程 | 佇列有併發數、排程時間及佇列空時停止等持久化欄位：`DownloadQueuePersistedDataAccess.kt`；排程與佇列管理在 `queue\DownloadQueue.kt`、`queue\QueueManager.kt`；桌面佇列頁提供相應操作。 | 基礎能力已存在，不宜列為待從零開發。需比對更細的排程條件、重複任務、完成後關機／斷線及同步工作等 IDM 使用情境。 |
 | 分類、搜尋與介面 | 有分類管理、首頁篩選／搜尋狀態、主題及多語系資源：`shared\app\src\commonMain\kotlin\com\abdownloadmanager\shared\pages\home\FilterState.kt`、`...\util\category\CategoryManager.kt`、`shared\resources\src\commonMain\resources\com\abdownloadmanager\resources\locales\`。 | 基礎組織及在地化已存在。IDM 的自訂介面、拖放、下載配額等需逐項核對；無障礙完整度與鍵盤／螢幕閱讀器涵蓋率尚未證實。 |
@@ -54,7 +54,7 @@ IDM 官方更新頁於本次分析日期列出 **6.43 Build 16（2026-10-23）**
 ### P1：補齊產品功能差距
 
 5. **確認並視需求新增 FTP/MMS 等協定。** 先評估用戶需求、維護負擔與測試方式，再決定實作順序；不要為了功能清單而引入無法穩定維護的協定。
-6. **評估網站抓取與「Download All」。** 若這是目標市場需求，設計使用者可控的網域／檔案類型／深度限制、預覽清單與取消機制，降低誤抓與對網站造成負載的風險。
+6. **擴展網站抓取與「Download All」。** 單頁連結／常見媒體資源擷取已實作；若需要跨頁網站抓取，再設計使用者可控的網域／檔案類型／深度限制、預覽清單與取消機制，降低誤抓與對網站造成負載的風險。
 7. **擴展媒體擷取能力前先釐清範圍。** 區分標準 HLS、其他串流格式、瀏覽器可下載媒體與受 DRM 保護內容；明確定義合規邊界、錯誤呈現及維護成本。
 8. **依使用情境補上下載後流程。** IDM 列有防毒掃描、流量配額、拖放及完成後動作等功能。先調查需求，再決定要整合外部防毒、提供可設定的完成動作，或維持由作業系統處理。
 
